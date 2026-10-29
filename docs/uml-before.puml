@@ -1,0 +1,39 @@
+
+@startuml
+title Invoice Refactoring - Before
+
+class Invoice {
+  - number : String
+  - customerEmail : String
+  - items : List<InvoiceItem>
+  {static} DATABASE : List<String>
+  {static} FILES : List<String>
+  --
+  + Invoice(number : String, customerEmail : String)
+  + addItem(name : String, price : double, qty : int) : void
+  + getItems() : List<InvoiceItem>
+  + calculateTotal() : double
+  + printInvoice() : String
+  + saveToDatabase(type : String) : void
+  + sendEmail() : String
+  + sendwhatsapp() : String
+}
+
+class InvoiceItem {
+  - name : String
+  - price : double
+  - qty : int
+}
+
+Invoice "1" *-- "0..*" InvoiceItem : يحتوي على
+
+note right of Invoice
+  الصنف مسؤول عن:
+  - إدارة العناصر
+  - حساب الإجمالي
+  - تنسيق الفاتورة
+  - حفظ البيانات
+  - إرسال الرسائل
+end note
+
+@enduml

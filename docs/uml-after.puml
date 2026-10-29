@@ -1,0 +1,89 @@
+
+@startuml
+title Invoice Refactoring - After
+
+package "s1.lab2" {
+
+  class Invoice {
+    - number : String
+    - customerEmail : String
+    - items : List<InvoiceItem>
+    --
+    + addItem(name : String, price : double, qty : int) : void
+    + getItems() : List<InvoiceItem>
+    + getNumber() : String
+    + getCustomerEmail() : String
+  }
+
+  class InvoiceItem {
+    - name : String
+    - price : double
+    - qty : int
+  }
+
+  class InvoiceCalculator {
+    + calculateTotal(invoice : Invoice) : double
+  }
+
+  class InvoiceFormatter {
+    - calculator : InvoiceCalculator
+    + format(invoice : Invoice) : String
+  }
+
+  interface InvoiceStorage {
+    + save(record : String) : void
+  }
+
+  class DatabaseInvoiceStorage {
+    + save(record : String) : void
+  }
+
+  class FileInvoiceStorage {
+    + save(record : String) : void
+  }
+
+  interface InvoiceMessageSender {
+    + send(invoice : Invoice, invoiceText : String) : String
+  }
+
+  class EmailInvoiceSender {
+    + send(invoice : Invoice, invoiceText : String) : String
+  }
+
+  class WhatsAppInvoiceSender {
+    + send(invoice : Invoice, invoiceText : String) : String
+  }
+
+  class InvoiceService {
+    - calculator : InvoiceCalculator
+    - formatter : InvoiceFormatter
+    - databaseStorage : InvoiceStorage
+    - fileStorage : InvoiceStorage
+    - emailSender : InvoiceMessageSender
+    - whatsAppSender : InvoiceMessageSender
+    --
+    + calculateTotal(invoice : Invoice) : double
+    + printInvoice(invoice : Invoice) : String
+    + saveToDatabase(invoice : Invoice, type : String) : void
+    + sendEmail(invoice : Invoice) : String
+    + sendwhatsapp(invoice : Invoice) : String
+  }
+
+  Invoice "1" *-- "0..*" InvoiceItem : يحتوي على
+
+  InvoiceFormatter --> InvoiceCalculator : يستخدم
+  InvoiceService --> InvoiceCalculator : يستخدم
+  InvoiceService --> InvoiceFormatter : يستخدم
+
+  InvoiceService --> InvoiceStorage : يستخدم
+  InvoiceStorage <|.. DatabaseInvoiceStorage
+  InvoiceStorage <|.. FileInvoiceStorage
+
+  InvoiceService --> InvoiceMessageSender : يستخدم
+  InvoiceMessageSender <|.. EmailInvoiceSender
+  InvoiceMessageSender <|.. WhatsAppInvoiceSender
+
+  InvoiceService ..> Invoice : يتعامل مع
+}
+
+@enduml
